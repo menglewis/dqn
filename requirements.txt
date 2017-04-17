@@ -1,0 +1,7 @@
+click==6.7
+gym==0.7.0
+h5py==2.6.0
+Keras==1.2.2
+numpy==1.11.1
+scipy==0.18.1
+tensorflow==1.0.1
