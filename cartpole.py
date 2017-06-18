@@ -30,8 +30,9 @@ def build_model(num_states, num_actions, alpha=0.001):
 @click.option('--gamma', default=0.99)
 @click.option('--episodes', default=1000)
 @click.option('--update-target-frequency', default=1000)
+@click.option('--verbose', default=False, type=bool)
 def run_cartpole(alpha, memory_len, epsilon_max, epsilon_min, lambda_, batch_size,
-                 gamma, episodes, update_target_frequency):
+                 gamma, episodes, update_target_frequency, verbose):
     env = gym.make('CartPole-v0')
     num_states = env.observation_space.shape[0]
     num_actions = env.action_space.n
@@ -47,7 +48,7 @@ def run_cartpole(alpha, memory_len, epsilon_max, epsilon_min, lambda_, batch_siz
     helper = GymHelper(env, agent, episodes, update_target_frequency)
 
     try:
-        helper.run(verbose=True)
+        helper.run(verbose=verbose)
     finally:
         hyperparameters = {
             'alpha': alpha,
