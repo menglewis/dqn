@@ -14,5 +14,5 @@ This will train the agent and save the weights for the model as well as save the
 ## Use the trained agent
 After training a model, you can load it into an agent and play it against an OpenAI Gym environment using play.py
 
-    $ python play.py --env-name CartPole-v0 --model-path model_CartPole-v0.h5 --episodes 1
+    $ python play.py --env-name CartPole-v0 --model-path model_CartPole-v0_DQNAgent.h5 --episodes 1
     
