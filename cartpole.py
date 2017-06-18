@@ -2,6 +2,7 @@ import gym
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import RMSprop
+import click
 
 from agent import DQNAgent
 from loss import huber_loss
@@ -19,30 +20,31 @@ def build_model(num_states, num_actions, alpha=0.001):
     return model
 
 
-if __name__ == "__main__":
+@click.command()
+@click.option('--alpha', default=0.00025)
+@click.option('--memory-len', default=100000)
+@click.option('--epsilon-max', default=1.0)
+@click.option('--epsilon-min', default=0.01)
+@click.option('--lambda_', default=0.00095)
+@click.option('--batch-size', default=64)
+@click.option('--gamma', default=0.99)
+@click.option('--episodes', default=1000)
+@click.option('--update-target-frequency', default=1000)
+def run_cartpole(alpha, memory_len, epsilon_max, epsilon_min, lambda_, batch_size,
+                 gamma, episodes, update_target_frequency):
     env = gym.make('CartPole-v0')
     num_states = env.observation_space.shape[0]
     num_actions = env.action_space.n
 
-    ALPHA = 0.00025
-    MEMORY_LEN = 100000
-    EPSILON_MAX = 1.0
-    EPSILON_MIN = 0.01
-    LAMBDA = 0.00095
-    BATCH_SIZE = 64
-    GAMMA = 0.99
-    EPISODES = 1000
-    UPDATE_TARGET_FREQUENCY = 1000
+    model = build_model(num_states, num_actions, alpha)
+    target_model = build_model(num_states, num_actions, alpha)
 
-    model = build_model(num_states, num_actions, ALPHA)
-    target_model = build_model(num_states, num_actions, ALPHA)
+    memory = Memory(memory_len)
+    policy = EpsilonGreedyDecayPolicy(epsilon_max, epsilon_min, lambda_)
 
-    memory = Memory(MEMORY_LEN)
-    policy = EpsilonGreedyDecayPolicy(EPSILON_MAX, EPSILON_MIN, LAMBDA)
+    agent = DQNAgent(num_states, num_actions, model, target_model, memory, policy, batch_size, gamma)
 
-    agent = DQNAgent(num_states, num_actions, model, target_model, memory, policy, BATCH_SIZE, GAMMA)
-
-    helper = GymHelper(env, agent, EPISODES, UPDATE_TARGET_FREQUENCY)
+    helper = GymHelper(env, agent, episodes, update_target_frequency)
 
     try:
         helper.run(verbose=True)
@@ -51,3 +53,7 @@ if __name__ == "__main__":
 
     with open('episode_rewards_{}_{}.txt'.format(helper.env_name, agent.__class__.__name__), 'w') as f:
         f.write("\n".join(map(str, helper.episode_rewards)))
+
+
+if __name__ == "__main__":
+    run_cartpole()
