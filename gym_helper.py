@@ -1,3 +1,6 @@
+import os
+import json
+from datetime import datetime
 from collections import deque
 
 
@@ -56,3 +59,27 @@ class GymHelper(object):
                 else:
                     print("Episode {} | Reward {}".format(episode, episode_reward))
         return self.episode_rewards
+
+    def save(self, hyperparameters=None):
+        if hyperparameters is None:
+            hyperparameters = {}
+
+        base_path = './models/{}/'.format(datetime.utcnow().strftime("%Y%m%d%H%M%S"))
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        model_path = os.path.join(base_path, 'model.h5')
+        self.agent.model.save(model_path)
+
+        with open(os.path.join(base_path, 'episode_rewards.txt'), 'w') as f:
+            f.write("\n".join(map(str, self.episode_rewards)))
+
+        metadata = {
+            'environment': self.env_name,
+            'agent': self.agent.__class__.__name__,
+            'policy': self.agent.policy.__class__.__name__,
+        }
+        metadata.update(hyperparameters)
+        with open(os.path.join(base_path, 'metadata.json'), 'w') as f:
+            json.dump(metadata, f)
+        print("Model saved. To run a single episode of the model, run:")
+        print("python play.py --env-name {} --model-path {} --episodes 1".format(self.env_name, model_path))

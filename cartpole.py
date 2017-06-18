@@ -49,10 +49,18 @@ def run_cartpole(alpha, memory_len, epsilon_max, epsilon_min, lambda_, batch_siz
     try:
         helper.run(verbose=True)
     finally:
-        agent.model.save('model_{}_{}.h5'.format(helper.env_name, agent.__class__.__name__))
-
-    with open('episode_rewards_{}_{}.txt'.format(helper.env_name, agent.__class__.__name__), 'w') as f:
-        f.write("\n".join(map(str, helper.episode_rewards)))
+        hyperparameters = {
+            'alpha': alpha,
+            'memory_len': memory_len,
+            'epsilon_max': epsilon_max,
+            'epsilon_min': epsilon_min,
+            'lambda_': lambda_,
+            'batch_size': batch_size,
+            'gamma': gamma,
+            'episodes': episodes,
+            'update_target_frequency': update_target_frequency,
+        }
+        helper.save(hyperparameters)
 
 
 if __name__ == "__main__":

@@ -23,3 +23,6 @@ wheels/
 
 # Pycharm
 .idea/
+
+# Saved models
+models/

@@ -12,7 +12,7 @@ from policy import GreedyPolicy
 @click.option('--env-name', default='CartPole-v0', prompt='Env Name (CartPole-v0, LunarLander-v2, etc)')
 @click.option('--model-path', prompt='Model path')
 @click.option('--episodes', default=1, prompt='Number of Episodes')
-@click.option('--max-steps', default=None, type=int, prompt='Max steps (defaults to environment max)')
+@click.option('--max-steps', default=None, type=int, help='Max steps (defaults to environment max)')
 def play(env_name, model_path, episodes, max_steps):
     env = gym.make(env_name)
     model = load_model(model_path, custom_objects={'huber_loss': huber_loss})
